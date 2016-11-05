@@ -97,9 +97,6 @@ resource "openstack_compute_instance_v2" "kube-master" {
       "sudo apt-get -y upgrade",
       "sudo apt-get install -y docker.io htop",
       "sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni",
-      "echo '[Global]\nuser_name = ${var.user_name}\ntenant_name = ${var.tenant_name}\npassword = ${var.password}\nauth_url = ${var.auth_url}' > /tmp/cloud.json",
-      "sudo mkdir -p /etc/kubernetes/",
-      "sudo mv /tmp/cloud.json /etc/kubernetes/cloud-config.json",
       "sudo service kubelet stop",
       "sudo service kubelet start",
       "sudo kubeadm init --token ${var.kube_token}",
@@ -123,9 +120,7 @@ resource "openstack_compute_instance_v2" "kube-worker" {
   flavor_name     = "${var.worker_flavor}"
   key_pair        = "${openstack_compute_keypair_v2.kube.name}"
   security_groups = ["${openstack_compute_secgroup_v2.kube.name}"]
-
-  /*config_drive    = true*/
-  depends_on = ["openstack_compute_instance_v2.kube-master"]
+  depends_on      = ["openstack_compute_instance_v2.kube-master"]
 
   network {
     uuid = "${openstack_networking_network_v2.kube.id}"
@@ -145,16 +140,13 @@ resource "openstack_compute_instance_v2" "kube-worker" {
   provisioner "remote-exec" {
     inline = [
       "sudo sed -i -r  \"s/127.0.0.1 localhost/127.0.0.1 localhost kube-worker-${count.index}/\" /etc/hosts",
-      "sudo mv /tmp/kubernetes.list /etc/apt/sources.list.d/kubernetes.list",
+      "sudo sh -c 'echo \"deb http://apt.kubernetes.io/ kubernetes-xenial main\" >> /etc/apt/sources.list.d/kubernetes.list'",
       "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg -o /tmp/key.gpg",
       "sudo apt-key add /tmp/key.gpg",
       "sudo apt-get update",
       "sudo apt-get -y upgrade",
       "sudo apt-get install -y docker.io htop",
       "sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni",
-      "echo '[Global]\nuser_name = ${var.user_name}\ntenant_name = ${var.tenant_name}\npassword = ${var.password}\nauth_url = ${var.auth_url}' > /tmp/cloud.json",
-      "sudo mkdir -p /etc/kubernetes/",
-      "sudo mv /tmp/cloud.json /etc/kubernetes/cloud-config.json",
       "sudo service kubelet stop",
       "sudo service kubelet start",
       "sudo kubeadm join --token ${var.kube_token} ${openstack_compute_instance_v2.kube-master.access_ip_v4}",
