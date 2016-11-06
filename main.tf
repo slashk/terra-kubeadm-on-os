@@ -82,11 +82,10 @@ resource "openstack_compute_instance_v2" "kube-master" {
   security_groups = ["${openstack_compute_secgroup_v2.kube.name}"]
   floating_ip     = "${openstack_compute_floatingip_v2.kube.address}"
 
-  /*config_drive    = true*/
-
   network {
     uuid = "${openstack_networking_network_v2.kube.id}"
   }
+
   provisioner "remote-exec" {
     inline = [
       "sudo sed -i -r  's/127.0.0.1 localhost/127.0.0.1 localhost kube-master/' /etc/hosts",
@@ -95,10 +94,8 @@ resource "openstack_compute_instance_v2" "kube-master" {
       "sudo apt-key add /tmp/key.gpg",
       "sudo apt-get update",
       "sudo apt-get -y upgrade",
-      "sudo apt-get install -y docker.io htop",
-      "sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni",
-      "sudo service kubelet stop",
-      "sudo service kubelet start",
+      "sudo apt-get install -y docker.io htop kubelet kubeadm kubectl kubernetes-cni",
+      "sudo service kubelet restart",
       "sudo kubeadm init --token ${var.kube_token}",
       "sudo cp -v /etc/kubernetes/admin.conf /home/ubuntu/config",
       "sudo chown ubuntu /home/ubuntu/config",
@@ -124,17 +121,6 @@ resource "openstack_compute_instance_v2" "kube-worker" {
 
   network {
     uuid = "${openstack_networking_network_v2.kube.id}"
-  }
-
-  provisioner "file" {
-    source      = "kubernetes.list"
-    destination = "/tmp/kubernetes.list"
-
-    connection {
-      user         = "${var.ssh_user_name}"
-      private_key  = "${file("${var.ssh_key_file}")}"
-      bastion_host = "${openstack_compute_instance_v2.kube-master.access_ip_v4}"
-    }
   }
 
   provisioner "remote-exec" {
