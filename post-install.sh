@@ -1,4 +1,11 @@
 #!/bin/bash
+# Connects Mac to Kubernetes cluster and then install add-ons for
+#   - Kuberntes Dashboard
+#   - Weavescope
+# this script requires bash, terraform and jq
+# Install on a mac with
+#  $ brew install jq terraform
+#
 
 # variables
 KCFG="kubectl.cfg"
@@ -8,7 +15,6 @@ PUBADDR=`terraform output master_public_ip`
 KEY=`terraform output sshkey`
 USER=`terraform output username`
 WORKER_IPS=`terraform output -json worker_private_ip | jq -r '.value[]'`
-TMPFILE="./tmpfile"
 
 # add kube-worker entries to /etc/hosts in case they didn't register in DNS
 I=0
@@ -19,9 +25,7 @@ done
 
 # grab kube config file from kube-master
 echo -n "Retrieving kubectl configuration ...."
-scp -i ${KEY} \
-  `terraform output username`@${PUBADDR}:/home/ubuntu/config \
-  ${KCFG}
+scp -i ${KEY} ${USER}@${PUBADDR}:/home/ubuntu/config ${KCFG}
 echo " DONE"
 
 # rewrite config to use self-signed certs and floating ip address
