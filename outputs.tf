@@ -19,5 +19,5 @@ output "token" {
 }
 
 output "worker_private_ip" {
-  value = ["${openstack_compute_instance_v2.kube-worker.*.network.0.fixed_ip_v4}}"]
+  value = ["${openstack_compute_instance_v2.kube-worker.*.network.0.fixed_ip_v4}"]
 }
