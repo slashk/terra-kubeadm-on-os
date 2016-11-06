@@ -7,12 +7,15 @@ PRIVADDR=`terraform output master_private_ip`
 PUBADDR=`terraform output master_public_ip`
 KEY=`terraform output sshkey`
 USER=`terraform output username`
+WORKER_IPS=`terraform output -json worker_private_ip | jq -r '.value[]'`
+TMPFILE="./tmpfile"
 
-# TODO fix kube-master to have kube-worker ip addresses
-# for x in `terraform output work-ips`; do
-#    ssh -i ${KEY} ${USER}@${PUBADDR} -c "sudo echo '${x}  kube-worker-0' >> /etc/hosts"
-#  ssh -i ~/.ssh/terraform ubuntu@10.0.2.139 "sudo sh -c \"echo '192.168.50.4  kube-worker-0' >> /etc/hosts\""
-# done
+# add kube-worker entries to /etc/hosts in case they didn't register in DNS
+I=0
+for x in $WORKER_IPS; do
+  ssh -i ${KEY} ${USER}@${PUBADDR} "sudo sed -i '1 a ${x} kube-worker-${I}' /etc/hosts"
+  ((I = I + 1))
+done
 
 # grab kube config file from kube-master
 echo -n "Retrieving kubectl configuration ...."
