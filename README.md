@@ -22,7 +22,7 @@ A lot:
 * Host on any other cloud than OpenStack
 * Host on any other operating system than Ubuntu 16.04 LTS
 
-## For The Impatient
+## Usage
 
 For the impatient:
 
