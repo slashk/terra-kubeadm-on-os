@@ -24,12 +24,12 @@ variable "user_name" {
 }
 
 variable "tenant_name" {
-  default     = "goldstone"
+  default     = "kube"
   description = "OS_TENANT_NAME from your OpenStack rc file"
 }
 
 variable "password" {
-  default     = "Z3k3rd0g"
+  default     = "sekrit"
   description = "OS_PASSWORD from your OpenStack rc file"
 }
 
