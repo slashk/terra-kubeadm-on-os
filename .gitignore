@@ -7,3 +7,6 @@
 
 # kubeconfig files
 kubectl.cfg
+
+# local variables
+terraform.tfvars

@@ -28,7 +28,9 @@ For the impatient:
 
 ```
 $ brew install kubectl terraform jq
-$ curl -O http://github.com/slashk/tf.zip && unzip tf.zip && cd tf
+$ curl -o tf.zip https://github.com/slashk/terra-kubeadm-on-os/archive/master.zip
+$ unzip tf.zip
+$ cd terra-kubeadm-on-os-master
 $ terraform apply
 $ ./post-install.sh
 ```
