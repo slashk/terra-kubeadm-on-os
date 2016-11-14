@@ -31,6 +31,7 @@ $ brew install kubectl terraform jq
 $ curl -o tf.zip https://github.com/slashk/terra-kubeadm-on-os/archive/master.zip
 $ unzip tf.zip
 $ cd terra-kubeadm-on-os-master
+$ terraform plan
 $ terraform apply
 $ ./post-install.sh
 ```
