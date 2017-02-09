@@ -24,7 +24,7 @@ resource "openstack_networking_subnet_v2" "kube" {
   cidr            = "${var.tenant_net_cidr}"
   ip_version      = 4
   enable_dhcp     = "true"
-  dns_nameservers = "${var.dns_nameservers}"
+  /*dns_nameservers = "${var.dns_nameservers}"*/
 }
 
 resource "openstack_networking_router_v2" "kube" {
@@ -96,7 +96,7 @@ resource "openstack_compute_instance_v2" "kube-master" {
       "sudo apt-get -y upgrade",
       "sudo apt-get install -y docker.io htop kubelet kubeadm kubectl kubernetes-cni",
       "sudo service kubelet restart",
-      "sudo kubeadm init --token ${var.kube_token}",
+      "sudo kubeadm init --token ${var.kube_token} --use-kubernetes-version ${var.kube_version}",
       "sudo cp -v /etc/kubernetes/admin.conf /home/ubuntu/config",
       "sudo chown ubuntu /home/ubuntu/config",
       "kubectl apply -f https://git.io/weave-kube",

@@ -71,11 +71,16 @@ variable kube_token {
 }
 
 variable dns_nameservers {
-  default     = ["10.0.2.1"]
+  default     = ["8.8.8.8", "8.8.4.4"]
   description = "List (using [\"DNS server ip 1\", \"DNS server ip 2\"] to use for OpenStack network created)"
 }
 
 variable tenant_net_cidr {
   default     = "192.168.50.0/24"
   description = "CIDR (IP subnet range) to use for kubernetes private network"
+}
+
+variable kube_version {
+  default     = "v1.5.2"
+  description = "kubernetes version of cluster (i.e. --use-kubernetes-version v1.5.2)"
 }
