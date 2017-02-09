@@ -2,9 +2,9 @@
 # Connects Mac to Kubernetes cluster and then install add-ons for
 #   - Kuberntes Dashboard
 #   - Weavescope
-# this script requires bash, terraform and jq
+# this script requires bash, kubectl, terraform and jq
 # Install on a mac with
-#  $ brew install jq terraform
+#  $ brew install jq terraform kubectl
 #
 
 # variables
@@ -17,6 +17,7 @@ USER=`terraform output username`
 WORKER_IPS=`terraform output -json worker_private_ip | jq -r '.value[]'`
 
 # add kube-worker entries to /etc/hosts in case they didn't register in DNS
+# this is still problematic until kube 1.5
 I=0
 for x in $WORKER_IPS; do
   ssh -i ${KEY} ${USER}@${PUBADDR} "sudo sed -i '1 a ${x} kube-worker-${I}' /etc/hosts"
@@ -44,3 +45,7 @@ echo " DONE"
 echo -n "Starting kubernetes dashboard addon ...."
 kubectl ${KCF} apply -f 'https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml'
 echo " DONE"
+
+kubectl --kubeconfig=./kubectl.cfg cluster-info
+kubectl --kubeconfig=./kubectl.cfg version
+echo "SCRIPT COMPLETE."
