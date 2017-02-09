@@ -1,3 +1,3 @@
 alias dashproxy=" kubectl --kubeconfig=./kubectl.cfg port-forward $(kubectl --kubeconfig=./kubectl.cfg get pod --selector=app=kubernetes-dashboard -o jsonpath='{.items..metadata.name}' -n kube-system) -n kube-system 9090"
-alias scopeproxy="kubectl --kubeconfig=./kubectl.cfg port-forward $(kubectl --kubeconfig=./kubectl.cfg get pod --selector=weavescope-component=weavescope-app -o jsonpath='{.items..metadata.name}') 4040"
+alias scopeproxy="kubectl --kubeconfig=./kubectl.cfg port-forward $(kubectl --kubeconfig=./kubectl.cfg get pod --selector=name=weave-scope-app     -o jsonpath='{.items..metadata.name}') 4040"
 alias kc='kubectl --kubeconfig=./kubectl.cfg'
