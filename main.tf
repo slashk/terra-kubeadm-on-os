@@ -89,12 +89,15 @@ resource "openstack_compute_instance_v2" "kube-master" {
   provisioner "remote-exec" {
     inline = [
       "sudo sed -i -r  's/127.0.0.1 localhost/127.0.0.1 localhost kube-master/' /etc/hosts",
-      "sudo sh -c 'echo \"deb http://apt.kubernetes.io/ kubernetes-xenial main\" >> /etc/apt/sources.list.d/kubernetes.list'",
-      "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg -o /tmp/key.gpg",
-      "sudo apt-key add /tmp/key.gpg",
-      "sudo apt-get update",
-      "sudo apt-get -y upgrade",
-      "sudo apt-get install -y docker.io htop kubelet kubeadm kubectl kubernetes-cni",
+      "curl -s -O https://packages.cloud.google.com/apt/doc/apt-key.gpg",
+      "sudo apt-key add ./apt-key.gpg",
+      "sudo add-apt-repository -y 'deb http://apt.kubernetes.io/ kubernetes-xenial main'",
+      "sudo apt-get -y update",
+      "sudo apt-get -y -q upgrade",
+      "sudo apt-get install -y apt-transport-https docker.io",
+      "sudo systemctl start docker.service",
+      "sudo apt-get -y update",
+      "sudo apt-get install -y -q htop kubelet kubeadm kubectl kubernetes-cni",
       "sudo service kubelet restart",
       "sudo kubeadm init --token ${var.kube_token} --use-kubernetes-version ${var.kube_version}",
       "sudo cp -v /etc/kubernetes/admin.conf /home/ubuntu/config",
@@ -125,15 +128,17 @@ resource "openstack_compute_instance_v2" "kube-worker" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo sed -i -r  \"s/127.0.0.1 localhost/127.0.0.1 localhost kube-worker-${count.index}/\" /etc/hosts",
-      "sudo sh -c 'echo \"deb http://apt.kubernetes.io/ kubernetes-xenial main\" >> /etc/apt/sources.list.d/kubernetes.list'",
-      "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg -o /tmp/key.gpg",
-      "sudo apt-key add /tmp/key.gpg",
-      "sudo apt-get update",
-      "sudo apt-get -y upgrade",
-      "sudo apt-get install -y docker.io htop kubelet kubeadm kubectl kubernetes-cni",
-      "sudo service kubelet stop",
-      "sudo service kubelet start",
+      "sudo sed -i -r  's/127.0.0.1 localhost/127.0.0.1 localhost kube-master/' /etc/hosts",
+      "curl -s -O https://packages.cloud.google.com/apt/doc/apt-key.gpg",
+      "sudo apt-key add apt-key.gpg",
+      "sudo add-apt-repository 'deb http://apt.kubernetes.io/ kubernetes-xenial main'",
+      "sudo apt-get -y update",
+      "sudo apt-get -y -q upgrade",
+      "sudo apt-get install -y apt-transport-https docker.io ",
+      "sudo systemctl start docker.service",
+      "sudo apt-get -y update",
+      "sudo apt-get install -y htop kubelet kubeadm kubectl kubernetes-cni",
+      "sudo service kubelet restart",
       "sudo kubeadm join --token ${var.kube_token} ${openstack_compute_instance_v2.kube-master.access_ip_v4}",
     ]
 
