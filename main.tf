@@ -101,7 +101,7 @@ resource "openstack_compute_instance_v2" "kube-master" {
       "sudo service kubelet restart",
       "sudo kubeadm init --token ${var.kube_token} --kubernetes-version ${var.kube_version}",
       "sudo cp -v /etc/kubernetes/admin.conf /home/ubuntu/admin.conf",
-      "sudo chown ubuntu:ubuntu /home/ubuntu/config/admin.conf",
+      "sudo chown ubuntu /home/ubuntu/admin.conf",
       "export KUBECONFIG=$HOME/admin.conf",
       "kubectl apply -f https://git.io/weave-kube",
     ]
@@ -129,7 +129,7 @@ resource "openstack_compute_instance_v2" "kube-worker" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo sed -i -r  's/127.0.0.1 localhost/127.0.0.1 localhost kube-master/' /etc/hosts",
+      "sudo sed -i -r  's/127.0.0.1 localhost/127.0.0.1 localhost kube-worker-${count.index}/' /etc/hosts",
       "curl -s -O https://packages.cloud.google.com/apt/doc/apt-key.gpg",
       "sudo apt-key add apt-key.gpg",
       "sudo add-apt-repository 'deb http://apt.kubernetes.io/ kubernetes-xenial main'",
@@ -140,7 +140,7 @@ resource "openstack_compute_instance_v2" "kube-worker" {
       "sudo apt-get -y -q update",
       "sudo apt-get install -y -q htop kubelet kubeadm kubectl kubernetes-cni",
       "sudo service kubelet restart",
-      "sudo kubeadm join --token ${var.kube_token} ${openstack_compute_instance_v2.kube-master.access_ip_v4}",
+      "sudo kubeadm join --token ${var.kube_token} ${openstack_compute_instance_v2.kube-master.access_ip_v4}:6443",
     ]
 
     connection {

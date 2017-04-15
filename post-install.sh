@@ -43,7 +43,7 @@ echo " DONE"
 
 # dashboard
 echo -n "Starting kubernetes dashboard addon ...."
-kubectl ${KCF} apply -f 'https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml'
+kubectl ${KCF} apply -f 'https://cloud.weave.works/launch/k8s/weavescope.yaml'
 echo " DONE"
 
 kubectl --kubeconfig=./kubectl.cfg cluster-info
