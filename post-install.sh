@@ -26,7 +26,7 @@ done
 
 # grab kube config file from kube-master
 echo -n "Retrieving kubectl configuration ...."
-scp -i ${KEY} ${USER}@${PUBADDR}:/home/ubuntu/config ${KCFG}
+scp -i ${KEY} ${USER}@${PUBADDR}:/home/ubuntu/admin.conf ${KCFG}
 echo " DONE"
 
 # rewrite config to use self-signed certs and floating ip address

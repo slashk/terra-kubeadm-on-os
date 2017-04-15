@@ -100,8 +100,9 @@ resource "openstack_compute_instance_v2" "kube-master" {
       "sudo apt-get install -y -q htop kubelet kubeadm kubectl kubernetes-cni",
       "sudo service kubelet restart",
       "sudo kubeadm init --token ${var.kube_token} --kubernetes-version ${var.kube_version}",
-      "sudo cp -v /etc/kubernetes/admin.conf /home/ubuntu/config",
-      "sudo chown ubuntu /home/ubuntu/config",
+      "sudo cp -v /etc/kubernetes/admin.conf /home/ubuntu/admin.conf",
+      "sudo chown ubuntu:ubuntu /home/ubuntu/config/admin.conf",
+      "export KUBECONFIG=$HOME/admin.conf",
       "kubectl apply -f https://git.io/weave-kube",
     ]
 
