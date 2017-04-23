@@ -104,7 +104,7 @@ resource "openstack_compute_instance_v2" "kube-master" {
       "sudo cp -v /etc/kubernetes/admin.conf /home/ubuntu/admin.conf",
       "sudo chown ubuntu /home/ubuntu/admin.conf",
       "export KUBECONFIG=$HOME/admin.conf",
-      "kubectl apply -f https://git.io/weave-kube-1.6",
+      "kubectl apply -f ${var.kube_network_driver}",
     ]
 
     connection {
@@ -138,7 +138,6 @@ resource "openstack_compute_instance_v2" "kube-worker" {
       "sudo apt-get -y -qq update",
       "sudo apt-get install -y -qq apt-transport-https docker.io",
       "sudo systemctl start docker.service",
-      "sudo apt-get -y -qq update",
       "sudo apt-get install -y -qq htop kubelet kubeadm kubectl kubernetes-cni",
       "sudo service kubelet restart",
       "sudo kubeadm join --token ${var.kube_token} ${openstack_compute_instance_v2.kube-master.access_ip_v4}:6443",

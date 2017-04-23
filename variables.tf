@@ -84,3 +84,8 @@ variable kube_version {
   default     = "v1.5.2"
   description = "kubernetes version of cluster (i.e. --use-kubernetes-version v1.5.2)"
 }
+
+variable kube_network_driver {
+  default = "https://git.io/weave-kube-1.6"
+  description = "kubernetes network driver URL (weave, flannel, calico, etc)"
+}

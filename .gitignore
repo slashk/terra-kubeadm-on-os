@@ -10,3 +10,6 @@ kubectl.cfg
 
 # local variables
 terraform.tfvars
+
+# example workloads
+workloads/
