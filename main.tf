@@ -93,12 +93,9 @@ resource "openstack_compute_instance_v2" "kube-master" {
       "sudo apt-key add ./apt-key.gpg",
       "sudo add-apt-repository -y 'deb http://apt.kubernetes.io/ kubernetes-xenial main'",
       "grep kubernetes /etc/apt/sources.list",
-      /*"sudo apt-get -y -qq upgrade",*/
       "sudo apt-get -y -qq update",
-      "sudo apt-get install -y -qq apt-transport-https docker.io",
+      "sudo apt-get install -y -qq apt-transport-https docker.io htop kubelet kubeadm kubectl kubernetes-cni",
       "sudo systemctl start docker.service",
-      /*"sudo apt-get -y -qq update",*/
-      "sudo apt-get install -y -qq htop kubelet kubeadm kubectl kubernetes-cni",
       "sudo service kubelet restart",
       "sudo kubeadm init --token ${var.kube_token} --kubernetes-version ${var.kube_version} --apiserver-advertise-address ${openstack_compute_instance_v2.kube-master.access_ip_v4}",
       "sudo cp -v /etc/kubernetes/admin.conf /home/ubuntu/admin.conf",
@@ -136,9 +133,8 @@ resource "openstack_compute_instance_v2" "kube-worker" {
       "sudo add-apt-repository 'deb http://apt.kubernetes.io/ kubernetes-xenial main'",
       "grep kubernetes /etc/apt/sources.list",
       "sudo apt-get -y -qq update",
-      "sudo apt-get install -y -qq apt-transport-https docker.io",
+      "sudo apt-get install -y -qq apt-transport-https docker.io htop kubelet kubeadm kubectl kubernetes-cni",
       "sudo systemctl start docker.service",
-      "sudo apt-get install -y -qq htop kubelet kubeadm kubectl kubernetes-cni",
       "sudo service kubelet restart",
       "sudo kubeadm join --token ${var.kube_token} ${openstack_compute_instance_v2.kube-master.access_ip_v4}:6443",
     ]
